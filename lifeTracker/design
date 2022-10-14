@@ -1,0 +1,7 @@
+Tables
+
+questions
+user, label, text, valueType - bool, hour, minute, number, enum , allowedVals (comma sep for enum, minval-maxVal for num), inputType
+
+entry
+user, date, label, time , value
