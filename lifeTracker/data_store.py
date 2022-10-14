@@ -76,3 +76,7 @@ class DataStore:
         df = pd.read_sql_query("select value from tracker_data where user = ? and date = ? and  metric = ?", self.connection,
                                params=params)
         return df.values
+
+    def getAllValuesForEnum(self, user, param):
+        df = pd.read_sql_query("select allowed_values from metrics where user = ? and metric = ?", self.connection, params=[user, param])
+        return df.values[0].split(",")

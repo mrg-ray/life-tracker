@@ -14,7 +14,7 @@ from data_store import DataStore
 from daily_tracker import DailyTracker
 
 user = "mrg"
-app = dash.Dash(__name__)
+app = dash.Dash(__name__,external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 ds = DataStore()
 dt = DailyTracker()
@@ -156,7 +156,7 @@ app.layout = html.Div(
 
                                         ),
                                     ),
-                                    html.Form(id="daily-data-form",
+                                    html.Div(id="daily-data-form",
                                               children=dt.genform(user, date.today().strftime('%Y-%m-%d')),
                                               className="container__1", ),
                                     html.Div([html.Button("Submit", id="daily-tracker-submit", n_clicks=0,
@@ -198,11 +198,15 @@ def load_daily_tracker(tracker_date):
     State("tracker-date", "date")
 )
 def update_daily_tracker(n_clicks, values, tracker_date):
-    if not values:
-        return
-    if n_clicks > 0:
+    if values and n_clicks > 0:
         dt.addTrackerData(user, tracker_date, values)
-    return
+    return dbc.Alert(
+        "Tracker Data  Added",
+        id="alert-auto",
+        is_open=True,
+        duration=4000,
+    )
+
 
 
 @app.callback(
@@ -255,7 +259,7 @@ def add_metric_to_db(n_clicks, metric, metric_type, description, allowed_values,
                 duration=4000,
             )
     else:
-        if metric_type != 'bool':
+        if metric_type != 'Boolean':
             if len(allowed_values) > 0 and not allowed_values.isnumeric():
                 return dbc.Alert(
                     "Maximum Value for number field should be a number",
