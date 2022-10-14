@@ -21,10 +21,13 @@ class DailyTracker:
                 value = 0
             return html.Div(
                 [
-                    dbc.Label(metric[1], html_for="Submit"),
+                    html.P(
+                        metric[3]+" :",
+                        className="input__heading",
+                    ),
                     dcc.Slider(id=metric[1], min=0, max=int(metric[4]), step=1, value=value, className="metric_value"),
                 ],
-                className="mb-3",
+                className="input__container",
             )
 
     def genform(self, user, selected_date):
@@ -42,6 +45,5 @@ class DailyTracker:
                     metricName = item.get("id")
                     metricValue = item.get("value")
                     print(metricValue)
-                    dateObj = datetime.strptime(selected_date, '%Y-%m-%d')
-                    self.ds.upsertMetricTracker(dateObj, user, metricName, metricValue)
+                    self.ds.upsertMetricTracker(selected_date, user, metricName, metricValue)
         return

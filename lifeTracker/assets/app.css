@@ -45,6 +45,14 @@
     margin-top: 35px;
 }
 
+.input__date {
+    margin-top: 35px;
+    width: 100%;
+}
+td.CalendarDay {
+  padding: 0;
+}
+
 .dropdown__container {
     margin-top: 35px;
     margin-bottom: 45px;

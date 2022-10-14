@@ -42,7 +42,8 @@ app.layout = html.Div(
                             children=[
                                 html.Div(
                                     [
-                                        dcc.RadioItems(id='selected_metric', options=ds.getAllMetricNames(user), value='', inline=True),
+                                        dcc.RadioItems(id='selected_metric', options=ds.getAllMetricNames(user),
+                                                       value='', inline=True),
                                         html.Div(
                                             [
                                                 html.P(
@@ -142,22 +143,27 @@ app.layout = html.Div(
                             label="Fill Daily Data",
                             value="enter-data",
                             children=[
-                                dcc.DatePickerSingle(
-                                        id='tracker-date',
-                                        min_date_allowed=date.today() - timedelta(days=7),
-                                        max_date_allowed=date.today(),
-                                        initial_visible_month=date.today(),
-                                        display_format='MMMM Y, DD',
-                                        date=date.today()
+                                html.Div([
+                                    html.Div(
+                                        dcc.DatePickerSingle(
+                                            id='tracker-date',
+                                            min_date_allowed=date.today() - timedelta(days=7),
+                                            max_date_allowed=date.today(),
+                                            initial_visible_month=date.today(),
+                                            #display_format='MMMM y, DD',
+                                            date=date.today(),
+                                            className="input__date"
+
+                                        ),
                                     ),
-                                html.Form(
-                                    id="daily-data-form",
-                                    children=dt.genform(user, date.today().strftime('%Y-%m-%d')),
-                                    className="container__1",
-                                ),
-                                dbc.Button("Submit", id="daily-tracker-submit", color="primary", type="submit", n_clicks=0)
-                            ]
-                        )
+                                    html.Form(id="daily-data-form",
+                                              children=dt.genform(user, date.today().strftime('%Y-%m-%d')),
+                                              className="container__1", ),
+                                    html.Div([html.Button("Submit", id="daily-tracker-submit", n_clicks=0,
+                                                          className="submit__button")])
+                                ],
+                                className="container__1")
+                            ])
                     ],
                 )
             ],
@@ -173,6 +179,7 @@ app.layout = html.Div(
     className="app__container",
 )
 
+
 @app.callback(
     Output("daily-data-form", "children"),
     Input("tracker-date", "date")
@@ -180,7 +187,7 @@ app.layout = html.Div(
 def load_daily_tracker(tracker_date):
     if not tracker_date:
         return
-    #selected_date = datetime.strptime(tracker_date, '%Y-%m-%d')
+    # selected_date = datetime.strptime(tracker_date, '%Y-%m-%d')
     return dt.genform(user, tracker_date)
 
 
@@ -197,6 +204,7 @@ def update_daily_tracker(n_clicks, values, tracker_date):
         dt.addTrackerData(user, tracker_date, values)
     return
 
+
 @app.callback(
     Output("metric", "value"),
     Output("metric-type", "value"),
@@ -210,7 +218,8 @@ def select_metric_to_update(value):
     if metricData is None:
         return None, None, None, None, None
     print(metricData)
-    return metricData[1],metricData[2],metricData[3],metricData[4],metricData[5]
+    return metricData[1], metricData[2], metricData[3], metricData[4], metricData[5]
+
 
 @app.callback(
     Output("alert", "children"),
@@ -266,12 +275,12 @@ def add_metric_to_db(n_clicks, metric, metric_type, description, allowed_values,
     }
     insert_entry = ds.upsertMetric(metric_entry)
     return dbc.Alert(
-            "Metric updated successfully!",
-            id="alert-auto",
-            is_open=True,
-            duration=4000,
-        )
+        "Metric updated successfully!",
+        id="alert-auto",
+        is_open=True,
+        duration=4000,
+    )
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True,dev_tools_ui=True,dev_tools_props_check=True)
+    app.run_server(debug=True, dev_tools_ui=True, dev_tools_props_check=True)

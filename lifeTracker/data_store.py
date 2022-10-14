@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import sqlalchemy as db
 import pandas as pd
 from pandas.core.common import flatten
@@ -39,8 +41,7 @@ class DataStore:
         except IntegrityError:
             self.db_engine.execute(
                 self.MetricTable.update().where(self.MetricTable.columns.metric == metric_entry['metric'],
-                                                self.MetricTable.columns.user == metric_entry['user']).where().values(
-                    metric_entry))
+                                                self.MetricTable.columns.user == metric_entry['user']).values(metric_entry))
 
     def getAllMetricNames(self, user):
         df = pd.read_sql_query("select metric from metrics where user = ?", self.connection, params=[user])
@@ -62,11 +63,12 @@ class DataStore:
 
     def upsertMetricTracker(self, date, user, metric_name, metric_value):
         try:
-            self.db_engine.execute(self.TrackerData.insert().values([user, metric_name, date, metric_value]))
+            dateObj = datetime.strptime(date, '%Y-%m-%d')
+            self.db_engine.execute(self.TrackerData.insert().values([user, metric_name, dateObj, metric_value]))
         except IntegrityError:
             self.db_engine.execute(
                 self.TrackerData.update().where(self.TrackerData.columns.metric == metric_name,
-                                                self.TrackerData.columns.date == date, self.TrackerData.user == user)
+                                                self.TrackerData.columns.date == date, self.TrackerData.columns.user == user)
                 .values({'value': metric_value}))
 
     def getTrackerForGivenDate(self, user, selected_date, metric_name):
