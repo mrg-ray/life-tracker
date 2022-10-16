@@ -14,7 +14,11 @@ from dash.dependencies import Input, Output, State
 
 ds = DataStore()
 
-
+def format_options(options):
+    list=[]
+    for option in options:
+        list.append({'label':html.Span(option, style={'font-size': 15, 'margin-right': 20 , 'margin-left': 3}) , 'value' : option})
+    return list
 def createView(metric, user, selected_date):
     label = html.P(
         metric[3] + " :",
@@ -40,11 +44,11 @@ def createView(metric, user, selected_date):
             value = value[0][0]
         else:
             value = ''
-        metric_input = dcc.RadioItems(id=metric[1], options=metric[4].split(","), className="metric_value",
+        metric_input = dcc.RadioItems(id=metric[1], options=format_options(metric[4].split(",")), className="metric_value",
                                       value=value, inline=True)
     return html.Div(
         [label, metric_input],
-        className="input__container",
+        className="input__container container__1",
     )
 
 
@@ -87,7 +91,7 @@ tracker_form = html.Div([
     ),
     html.Div(id="daily-data-form",
              children=genform(trackerapp.user, date.today().strftime('%Y-%m-%d')),
-             className="container__1", ),
+             ),
     html.Div([html.Button("Submit", id="daily-tracker-submit", n_clicks=0,
                           className="submit__button")]),
     html.Div(id="alert-tracker-update")

@@ -33,7 +33,7 @@ menuSlider = html.Div(
 
 
 # Layout for Team Analysis page
-teamLayout = html.Div(
+baseReportLayout = html.Div(
     [
         dbc.Row(dbc.Col(html.H3(children="Time Share"))),
         # Display Championship titles in datatable
