@@ -9,16 +9,20 @@ import dash_bootstrap_components as dbc
 from lifeTracker.data_store import DataStore
 
 from lifeTracker import trackerapp
-from trackerapp import app
+from lifeTracker.trackerapp import app
 from dash.dependencies import Input, Output, State
 
 ds = DataStore()
 
+
 def format_options(options):
-    list=[]
+    list = []
     for option in options:
-        list.append({'label':html.Span(option, style={'font-size': 15, 'margin-right': 20 , 'margin-left': 3}) , 'value' : option})
+        list.append({'label': html.Span(option, style={'font-size': 15, 'margin-right': 20, 'margin-left': 3}),
+                     'value': option})
     return list
+
+
 def createView(metric, user, selected_date):
     label = html.P(
         metric[3] + " :",
@@ -44,7 +48,8 @@ def createView(metric, user, selected_date):
             value = value[0][0]
         else:
             value = ''
-        metric_input = dcc.RadioItems(id=metric[1], options=format_options(metric[4].split(",")), className="metric_value",
+        metric_input = dcc.RadioItems(id=metric[1], options=format_options(metric[4].split(",")),
+                                      className="metric_value",
                                       value=value, inline=True)
     return html.Div(
         [label, metric_input],
@@ -90,15 +95,15 @@ tracker_form = html.Div([
         ),
     ),
     html.Div(id="daily-data-form",
-             children=genform(trackerapp.user, date.today().strftime('%Y-%m-%d')),
-             ),
+             children=genform(trackerapp.user, date.today().strftime('%Y-%m-%d'))),
     html.Div([html.Button("Submit", id="daily-tracker-submit", n_clicks=0,
                           className="submit__button")]),
     html.Div(id="alert-tracker-update")
-    ],
+],
 
     className="container__1"
 )
+
 
 @app.callback(
     Output("daily-data-form", "children"),
@@ -120,14 +125,10 @@ def load_daily_tracker(tracker_date):
 def update_daily_tracker(n_clicks, values, tracker_date):
     if values and n_clicks > 0:
         addTrackerData(trackerapp.user, tracker_date, values)
-    return dbc.Alert(
-        "Tracker Data  Added",
-        id="alert-auto",
-        is_open=True,
-        duration=4000,
-    )
-
-
-
-
-
+        return dbc.Alert(
+            "Tracker Data  Added",
+            id="alert-auto",
+            is_open=True,
+            duration=4000,
+        )
+    return ''

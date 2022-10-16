@@ -11,11 +11,11 @@ from datetime import date
 
 from dash.dependencies import Input, Output, State
 
-from lifeTracker import trackerapp
-from trackerapp import app
+import lifeTracker.trackerapp as tracker
+from lifeTracker.trackerapp import app
 from lifeTracker.data_store import DataStore
 
-user=trackerapp.user
+user=tracker.user
 ds=DataStore()
 
 
@@ -145,6 +145,7 @@ def select_metric_to_update(value):
 
 @app.callback(
     Output("alert", "children"),
+    Output("selected_metric", "options"),
     Input("submit-metric", "n_clicks"),
     State("metric", "value"),
     State("metric-type", "value"),
@@ -153,20 +154,22 @@ def select_metric_to_update(value):
     State("enabled", "on")
 )
 def add_metric_to_db(n_clicks, metric, metric_type, description, allowed_values, enabled):
+    if not n_clicks:
+        return '', format_options(ds.getAllMetricNames(user))
     if metric is None or len(metric) == 0:
         return dbc.Alert(
             "Metric Name Cannot be blank",
             id="alert-auto",
             is_open=True,
             duration=4000,
-        )
+        ), format_options(ds.getAllMetricNames(user))
     if metric_type is None or len(metric_type) == 0:
         return dbc.Alert(
             "Metric Type Cannot be blank",
             id="alert-auto",
             is_open=True,
             duration=4000,
-        )
+        ), format_options(ds.getAllMetricNames(user))
     if metric_type == 'Enum':
         values = allowed_values.split(",")
         if len(values) < 2:
@@ -175,7 +178,7 @@ def add_metric_to_db(n_clicks, metric, metric_type, description, allowed_values,
                 id="alert-auto",
                 is_open=True,
                 duration=4000,
-            )
+            ), format_options(ds.getAllMetricNames(user))
     else:
         if metric_type != 'Boolean':
             if len(allowed_values) > 0 and not allowed_values.isnumeric():
@@ -184,7 +187,7 @@ def add_metric_to_db(n_clicks, metric, metric_type, description, allowed_values,
                     id="alert-auto",
                     is_open=True,
                     duration=4000,
-                )
+                ), format_options(ds.getAllMetricNames(user))
     print(n_clicks)
 
     metric_entry = {
@@ -201,4 +204,4 @@ def add_metric_to_db(n_clicks, metric, metric_type, description, allowed_values,
         id="alert-auto",
         is_open=True,
         duration=4000,
-    )
+    ), format_options(ds.getAllMetricNames(user))

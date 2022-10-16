@@ -16,14 +16,12 @@ from datetime import date
 from dash.dependencies import Input, Output, State
 
 from lifeTracker import trackerapp
-from trackerapp import app
+from lifeTracker.trackerapp import app
 import plotly.express as px
 import pandas as pd
 ds = DataStore()
 
-tracker = ds.loadTrackerData(trackerapp.user)
-metrics = ds.getAllMetrics(trackerapp.user)
-joined_data=pd.merge(tracker, metrics, left_on=['metric', 'user'], right_on=['metric', 'user'], how='left')
+
 menuSlider = html.Div(
     [
         dbc.Row(
@@ -63,6 +61,9 @@ def genEnumMetricsGraph():
     pass
 
 def basePie():
+    tracker = ds.loadTrackerData(trackerapp.user)
+    metrics = ds.getAllMetrics(trackerapp.user)
+    joined_data = pd.merge(tracker, metrics, left_on=['metric', 'user'], right_on=['metric', 'user'], how='left')
     fig = px.pie(joined_data, values='value', names='metric', hole=.3)
     return fig
 

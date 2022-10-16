@@ -9,15 +9,15 @@ from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 
 # Navbar, layouts, custom callbacks
-from navbar import Navbar
-from manage_metrics import metric_layout
-from daily_tracker import tracker_form
-from reports import baseReportLayout, menuSlider
+from lifeTracker.navbar import Navbar
+from lifeTracker.manage_metrics import metric_layout
+from lifeTracker.daily_tracker import tracker_form
+from lifeTracker.reports import baseReportLayout, menuSlider
 
 # Import app
-from trackerapp import app
+from lifeTracker.trackerapp import app
 # Import server for deployment
-from trackerapp import srv as server
+from lifeTracker.trackerapp import srv as server
 
 
 app_name = os.getenv("DASH_APP_PATH", "/lifeTracker")
