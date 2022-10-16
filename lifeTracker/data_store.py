@@ -41,7 +41,8 @@ class DataStore:
         except IntegrityError:
             self.db_engine.execute(
                 self.MetricTable.update().where(self.MetricTable.columns.metric == metric_entry['metric'],
-                                                self.MetricTable.columns.user == metric_entry['user']).values(metric_entry))
+                                                self.MetricTable.columns.user == metric_entry['user']).values(
+                    metric_entry))
 
     def getAllMetricNames(self, user):
         df = pd.read_sql_query("select metric from metrics where user = ?", self.connection, params=[user])
@@ -59,7 +60,7 @@ class DataStore:
 
     def getAllMetrics(self, user):
         df = pd.read_sql_query("select * from metrics where user = ?", self.connection, params=[user])
-        return df.values
+        return df
 
     def upsertMetricTracker(self, date, user, metric_name, metric_value):
         try:
@@ -68,15 +69,22 @@ class DataStore:
         except IntegrityError:
             self.db_engine.execute(
                 self.TrackerData.update().where(self.TrackerData.columns.metric == metric_name,
-                                                self.TrackerData.columns.date == date, self.TrackerData.columns.user == user)
+                                                self.TrackerData.columns.date == date,
+                                                self.TrackerData.columns.user == user)
                 .values({'value': metric_value}))
 
     def getTrackerForGivenDate(self, user, selected_date, metric_name):
         params = tuple(flatten((user, selected_date, metric_name)))
-        df = pd.read_sql_query("select value from tracker_data where user = ? and date = ? and  metric = ?", self.connection,
+        df = pd.read_sql_query("select value from tracker_data where user = ? and date = ? and  metric = ?",
+                               self.connection,
                                params=params)
         return df.values
 
     def getAllValuesForEnum(self, user, param):
-        df = pd.read_sql_query("select allowed_values from metrics where user = ? and metric = ?", self.connection, params=[user, param])
+        df = pd.read_sql_query("select allowed_values from metrics where user = ? and metric = ?", self.connection,
+                               params=[user, param])
         return df.values[0].split(",")
+
+    def loadTrackerData(self, user):
+        return pd.read_sql_query("select * from tracker_data where user = ?", self.connection,
+                                 params=[user])

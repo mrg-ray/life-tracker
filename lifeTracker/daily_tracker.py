@@ -55,7 +55,7 @@ def createView(metric, user, selected_date):
 def genform(user, selected_date):
     elements = []
     metrics = ds.getAllMetrics(user)
-    for metric in metrics:
+    for metric in metrics.values:
         elements.append(createView(metric, user, selected_date))
     return elements
 

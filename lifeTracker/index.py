@@ -12,6 +12,7 @@ import dash_bootstrap_components as dbc
 from navbar import Navbar
 from manage_metrics import metric_layout
 from daily_tracker import tracker_form
+from reports import baseReportLayout, menuSlider
 
 # Import app
 from trackerapp import app
@@ -76,8 +77,8 @@ def display_page(pathname):
         return metric_layout
     elif pathname.endswith("/tracker"):
         return tracker_form
-    # elif pathname.endswith("/reports"):
-    #     return appMenu, menuSlider, playerMenu, fieldingLayout
+    elif pathname.endswith("/reports"):
+        return menuSlider, baseReportLayout
     else:
         return "ERROR 404: Page not found!"
 
