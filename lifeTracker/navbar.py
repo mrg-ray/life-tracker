@@ -15,6 +15,9 @@ def Navbar():
             dbc.NavItem(
                 dbc.NavLink("Progress Report", href=f"{app_name}/reports")
             ),
+            dbc.NavItem(
+                dbc.NavLink("Logout", href=f"/logout")
+            ),
         ],
         brand="Home",
         brand_href=f"{app_name}",

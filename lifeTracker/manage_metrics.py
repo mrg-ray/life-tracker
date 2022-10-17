@@ -1,18 +1,11 @@
-from datetime import datetime, timedelta
-import re
-from textwrap import dedent
-import flask
-import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_daq as daq
 import dash_bootstrap_components as dbc
-from datetime import date
 
 from dash.dependencies import Input, Output, State
 from flask_login import current_user
 
-import lifeTracker.trackerapp as tracker
 from lifeTracker.trackerapp import app
 from lifeTracker.data_store import DataStore
 
@@ -28,8 +21,7 @@ def format_options(options):
 
 metric_layout = html.Div(
     [
-        dcc.RadioItems(id='selected_metric', options=format_options(ds.getAllMetricNames(current_user)),
-                       value='', inline=True),
+        dcc.RadioItems(id='selected_metric', value='', inline=True),
         html.Div(
             [
                 html.P(
@@ -128,14 +120,23 @@ metric_layout = html.Div(
 )
 
 @app.callback(
+    Output("selected_metric","options"),
+    Input("selected_metric", "value")
+)
+def load_options(value):
+    return format_options(ds.getAllMetricNames(current_user.name))
+
+@app.callback(
     Output("metric", "value"),
     Output("metric-type", "value"),
     Output("description", "value"),
     Output("allowed-values", "value"),
     Output("enabled", "on"),
     Input("selected_metric", "value"),
+    prevent_initial_call=True
 )
 def select_metric_to_update(value):
+    user = current_user.name
     metricData = ds.getMetric(value, user)
     if metricData is None:
         return None, None, None, None, None
@@ -145,31 +146,33 @@ def select_metric_to_update(value):
 
 @app.callback(
     Output("alert", "children"),
-    Output("selected_metric", "options"),
+    Output("selected_metric", "value"),
     Input("submit-metric", "n_clicks"),
     State("metric", "value"),
     State("metric-type", "value"),
     State("description", "value"),
     State("allowed-values", "value"),
-    State("enabled", "on")
+    State("enabled", "on"),
+    prevent_initial_call=True
 )
 def add_metric_to_db(n_clicks, metric, metric_type, description, allowed_values, enabled):
+    user = current_user.name
     if not n_clicks:
-        return '', format_options(ds.getAllMetricNames(user))
+        return '', ''
     if metric is None or len(metric) == 0:
         return dbc.Alert(
             "Metric Name Cannot be blank",
             id="alert-auto",
             is_open=True,
             duration=4000,
-        ), format_options(ds.getAllMetricNames(user))
+        ), ''
     if metric_type is None or len(metric_type) == 0:
         return dbc.Alert(
             "Metric Type Cannot be blank",
             id="alert-auto",
             is_open=True,
             duration=4000,
-        ), format_options(ds.getAllMetricNames(user))
+        ), ''
     if metric_type == 'Enum':
         values = allowed_values.split(",")
         if len(values) < 2:
@@ -178,7 +181,7 @@ def add_metric_to_db(n_clicks, metric, metric_type, description, allowed_values,
                 id="alert-auto",
                 is_open=True,
                 duration=4000,
-            ), format_options(ds.getAllMetricNames(user))
+            ), ''
     else:
         if metric_type != 'Boolean':
             if len(allowed_values) > 0 and not allowed_values.isnumeric():
@@ -187,7 +190,7 @@ def add_metric_to_db(n_clicks, metric, metric_type, description, allowed_values,
                     id="alert-auto",
                     is_open=True,
                     duration=4000,
-                ), format_options(ds.getAllMetricNames(user))
+                ), ''
     print(n_clicks)
 
     metric_entry = {
@@ -204,4 +207,4 @@ def add_metric_to_db(n_clicks, metric, metric_type, description, allowed_values,
         id="alert-auto",
         is_open=True,
         duration=4000,
-    ), format_options(ds.getAllMetricNames(user))
+    ), ''

@@ -5,10 +5,10 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_daq as daq
 import dash_bootstrap_components as dbc
+from flask_login import current_user
 
 from lifeTracker.data_store import DataStore
 
-from lifeTracker import trackerapp
 from lifeTracker.trackerapp import app
 from dash.dependencies import Input, Output, State
 
@@ -94,8 +94,7 @@ tracker_form = html.Div([
 
         ),
     ),
-    html.Div(id="daily-data-form",
-             children=genform(trackerapp.user, date.today().strftime('%Y-%m-%d'))),
+    html.Div(id="daily-data-form"),
     html.Div([html.Button("Submit", id="daily-tracker-submit", n_clicks=0,
                           className="submit__button")]),
     html.Div(id="alert-tracker-update")
@@ -110,10 +109,11 @@ tracker_form = html.Div([
     Input("tracker-date", "date")
 )
 def load_daily_tracker(tracker_date):
+    user = current_user.name
     if not tracker_date:
-        return
+        tracker_date = date.today().strftime('%Y-%m-%d')
     # selected_date = datetime.strptime(tracker_date, '%Y-%m-%d')
-    return genform(trackerapp.user, tracker_date)
+    return genform(user, tracker_date)
 
 
 @app.callback(
@@ -123,8 +123,9 @@ def load_daily_tracker(tracker_date):
     State("tracker-date", "date")
 )
 def update_daily_tracker(n_clicks, values, tracker_date):
+    user = current_user.name
     if values and n_clicks > 0:
-        addTrackerData(trackerapp.user, tracker_date, values)
+        addTrackerData(user, tracker_date, values)
         return dbc.Alert(
             "Tracker Data  Added",
             id="alert-auto",

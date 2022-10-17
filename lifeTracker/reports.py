@@ -1,21 +1,15 @@
-# Menu slider used, NOT independent, MUST be used with main menu
 import dash_core_components as dcc
 import dash_html_components as html
-import dash_table
 
 # Import Bootstrap components
 import dash_bootstrap_components as dbc
-# Plotly graph objects to render graph plots
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 
-from lifeTracker import trackerapp
+from flask_login import current_user
+
 from lifeTracker.data_store import DataStore
-from datetime import date
 
 from dash.dependencies import Input, Output, State
 
-from lifeTracker import trackerapp
 from lifeTracker.trackerapp import app
 import plotly.express as px
 import pandas as pd
@@ -59,10 +53,14 @@ def genBooleanMetricGraphs():
 
 def genEnumMetricsGraph():
     pass
-
-def basePie():
-    tracker = ds.loadTrackerData(trackerapp.user)
-    metrics = ds.getAllMetrics(trackerapp.user)
+@app.callback(
+    Output("time-pie", "figure"),
+    Input("period-slider", "value")
+)
+def basePie(value):
+    user = current_user.name
+    tracker = ds.loadTrackerData(user)
+    metrics = ds.getAllMetrics(user)
     joined_data = pd.merge(tracker, metrics, left_on=['metric', 'user'], right_on=['metric', 'user'], how='left')
     fig = px.pie(joined_data, values='value', names='metric', hole=.3)
     return fig
@@ -76,7 +74,7 @@ baseReportLayout = html.Div(
         dbc.Row(
             [
                 # Pie Chart, % of Completed Games, Shutouts, and Saves of Total Games played
-                dbc.Col(dcc.Graph(id="time-bar", config={"displayModeBar": False}, figure=basePie())),
+                dbc.Col(dcc.Graph(id="time-pie", config={"displayModeBar": False})),
                 # Line graph of K/BB ratio with ERA bubbles
                 dbc.Col(dcc.Graph(id="time-bar", config={"displayModeBar": False}))
             ],
