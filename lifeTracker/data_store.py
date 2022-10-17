@@ -112,4 +112,9 @@ class DataStore:
                                  params=[user])
 
     def createUser(self, username, password, email):
-        self.db_engine.execute(self.Users.insert().values([{"username":username, "password":password, "email":email}]))
+        try:
+            self.db_engine.execute(self.Users.insert().values([{"username":username, "password":password, "email":email}]))
+        except IntegrityError:
+            self.db_engine.execute(
+                self.Users.update().where(self.Users.columns.username == username)
+                .values({'password': password}))

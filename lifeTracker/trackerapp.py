@@ -93,7 +93,7 @@ def successful(n_clicks, input1, input2):
             userObj = Users()
             userObj.id = user[0][0]
             login_user(userObj)
-            return '/'
+            return '/tracker'
         else:
             pass
     else:

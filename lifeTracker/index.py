@@ -83,7 +83,11 @@ def display_page(pathname):
             This database is copyright 1996-2021 by Sean Lahman. This data is licensed under a Creative Commons Attribution-ShareAlike
             3.0 Unported License. For details see: [CreativeCommons](http://creativecommons.org/licenses/by-sa/3.0/)
         """
-                )
+                ),
+                html.Div([
+                    html.Button("Export Data", id="btn_image"),
+                    dcc.Download(id="download-image")
+                ])
             ],
             className="home",
         )
@@ -96,6 +100,15 @@ def display_page(pathname):
     else:
         return "ERROR 404: Page not found!"
 
+@app.callback(
+    Output("download-image", "data"),
+    Input("btn_image", "n_clicks"),
+    prevent_initial_call=True,
+)
+def func(n_clicks):
+    return dcc.send_file(
+        "./data_entry.db"
+    )
 
 # Main index function that will call and return all layout variables
 def index():
