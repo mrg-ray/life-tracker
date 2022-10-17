@@ -59,7 +59,6 @@ def display_page(pathname):
             return logout
         else:
             return logout
-    user_id = current_user.id
     if pathname in [app_name, app_name + "/"]:
         return html.Div(
             [
