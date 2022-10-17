@@ -21,6 +21,16 @@ def format_options(options):
 
 metric_layout = html.Div(
     [
+        html.Div(
+            [
+                html.P(
+                    "Show Disabled:",
+                    className="input__heading",
+                ),
+                daq.BooleanSwitch(id='show-disabled', on=False),
+            ],
+            className="input__container",
+        ),
         dcc.RadioItems(id='selected_metric', value='', inline=True),
         html.Div(
             [
@@ -121,10 +131,10 @@ metric_layout = html.Div(
 
 @app.callback(
     Output("selected_metric","options"),
-    Input("selected_metric", "value")
+    Input("show-disabled", "on")
 )
-def load_options(value):
-    return format_options(ds.getAllMetricNames(current_user.name))
+def load_options(on):
+    return format_options(ds.getAllMetricNames(current_user.name, on))
 
 @app.callback(
     Output("metric", "value"),

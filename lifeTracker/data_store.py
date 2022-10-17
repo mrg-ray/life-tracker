@@ -66,8 +66,11 @@ class DataStore:
                                                 self.MetricTable.columns.user == metric_entry['user']).values(
                     metric_entry))
 
-    def getAllMetricNames(self, user):
-        df = pd.read_sql_query("select metric from metrics where user = ?", self.connection, params=[user])
+    def getAllMetricNames(self, user, all):
+        if all:
+            df = pd.read_sql_query("select metric from metrics where user = ?", self.connection, params=[user])
+        else:
+            df = pd.read_sql_query("select metric from metrics where user = ? and enabled = 1", self.connection, params=[user])
         list = []
         for value in df.values:
             list.append(value[0])
@@ -80,8 +83,11 @@ class DataStore:
                                self.connection, params=[metric, user])
         return df.values[0]
 
-    def getAllMetrics(self, user):
-        df = pd.read_sql_query("select * from metrics where user = ?", self.connection, params=[user])
+    def getAllMetrics(self, user, all=False):
+        if all:
+            df = pd.read_sql_query("select * from metrics where user = ?", self.connection,params=[user])
+        else:
+            df = pd.read_sql_query("select * from metrics where user = ? and enabled = 1", self.connection, params=[user])
         return df
 
     def upsertMetricTracker(self, date, user, metric_name, metric_value):
