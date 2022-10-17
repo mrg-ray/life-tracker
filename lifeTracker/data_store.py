@@ -48,8 +48,10 @@ class DataStore:
         db.Column("password",db.String(80)),
     )
 
-    metadata.create_all(db_engine)
-
+    try:
+        metadata.create_all(db_engine)
+    except:
+        pass
     def getUserByName(self , username):
         df = pd.read_sql_query("select * from users where username = ?", self.connection, params=[username])
         return df.values
