@@ -7,9 +7,11 @@ from dash.dependencies import Input, Output
 
 # Dash Bootstrap components
 import dash_bootstrap_components as dbc
+from flask_login import current_user, logout_user
 
+from lifeTracker.data_store import DataStore
 # Navbar, layouts, custom callbacks
-from lifeTracker.navbar import Navbar
+from lifeTracker.navbar import Navbar, login, create, logout
 from lifeTracker.manage_metrics import metric_layout
 from lifeTracker.daily_tracker import tracker_form
 from lifeTracker.reports import baseReportLayout, menuSlider
@@ -19,6 +21,7 @@ from lifeTracker.trackerapp import app
 # Import server for deployment
 from lifeTracker.trackerapp import srv as server
 
+user_id = None
 
 app_name = os.getenv("DASH_APP_PATH", "/lifeTracker")
 
@@ -43,9 +46,20 @@ container = dbc.Container([header, content])
 
 
 # Menu callback, set and return
-# Declair function  that connects other pages with content to container
+# Declare function  that connects other pages with content to container
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def display_page(pathname):
+    if pathname == '/create_user':
+        return create
+    if not current_user or not current_user.is_authenticated:
+        return login
+    elif pathname == '/logout':
+        if current_user.is_authenticated:
+            logout_user()
+            return logout
+        else:
+            return logout
+    user_id = current_user.id
     if pathname in [app_name, app_name + "/"]:
         return html.Div(
             [

@@ -7,3 +7,7 @@ SQLAlchemy
 gunicorn
 dash-table
 datetime
+flask-sqlalchemy
+flask-login
+werkzeug
+configparser

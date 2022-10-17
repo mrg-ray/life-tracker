@@ -10,12 +10,12 @@ import dash_bootstrap_components as dbc
 from datetime import date
 
 from dash.dependencies import Input, Output, State
+from flask_login import current_user
 
 import lifeTracker.trackerapp as tracker
 from lifeTracker.trackerapp import app
 from lifeTracker.data_store import DataStore
 
-user=tracker.user
 ds=DataStore()
 
 
@@ -28,7 +28,7 @@ def format_options(options):
 
 metric_layout = html.Div(
     [
-        dcc.RadioItems(id='selected_metric', options=format_options(ds.getAllMetricNames(user)),
+        dcc.RadioItems(id='selected_metric', options=format_options(ds.getAllMetricNames(current_user)),
                        value='', inline=True),
         html.Div(
             [

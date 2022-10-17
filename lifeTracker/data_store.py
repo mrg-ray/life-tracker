@@ -5,11 +5,16 @@ import pandas as pd
 from pandas.core.common import flatten
 from sqlalchemy.exc import IntegrityError
 
+db_url = "sqlite:///data_entry.db"
+
+
 
 # SQL Engine
 class DataStore:
+
+
     db_engine = db.create_engine(
-        "sqlite:///data_entry.db", connect_args={"check_same_thread": False}
+        db_url, connect_args={"check_same_thread": False}
     )
     connection = db_engine.connect()
     metadata = db.MetaData()
@@ -33,8 +38,25 @@ class DataStore:
         db.Column("date", db.DATE, primary_key=True),
         db.Column("value", db.String(19)),
     )
+
+    Users = db.Table(
+        "users",
+        metadata,
+        db.Column("id",db.Integer, primary_key=True),
+        db.Column("username",db.String(15), unique=True, nullable=False),
+        db.Column("email",db.String(50), unique=True),
+        db.Column("password",db.String(80)),
+    )
+
     metadata.create_all(db_engine)
 
+    def getUserByName(self , username):
+        df = pd.read_sql_query("select * from users where username = ?", self.connection, params=[username])
+        return df.values
+
+    def getUserById(self , id):
+        df = pd.read_sql_query("select * from users where id = ?", self.connection, params=[id])
+        return df.values
     def upsertMetric(self, metric_entry):
         try:
             self.db_engine.execute(self.MetricTable.insert().values(metric_entry))
@@ -88,3 +110,6 @@ class DataStore:
     def loadTrackerData(self, user):
         return pd.read_sql_query("select * from tracker_data where user = ?", self.connection,
                                  params=[user])
+
+    def createUser(self, username, password, email):
+        self.db_engine.execute(self.Users.insert().values([{"username":username, "password":password, "email":email}]))
