@@ -11,7 +11,7 @@ from lifeTracker.data_store import DataStore
 
 from lifeTracker.trackerapp import app
 from dash.dependencies import Input, Output, State
-
+import contants as const
 ds = DataStore()
 
 
@@ -30,12 +30,16 @@ def createView(metric, user, selected_date):
     )
     value = ds.getTrackerForGivenDate(user, selected_date, metric[1])
     metric_input = None
-    if metric[2] == 'Hour' or metric[2] == 'Minute' or metric[2] == 'Number':
-        if value:
+    if metric[2] == const.hr or metric[2] == const.num:
+        if len(value) > 0:
             value = int(value[0])
         else:
             value = 0
-        metric_input = dcc.Slider(id=metric[1], min=0, max=int(metric[4]), step=1, value=value,
+        if metric[4]:
+            max = int(metric[4])
+        else:
+            max = 10
+        metric_input = dcc.Slider(id=metric[1], min=0, max=max, step=1, value=value,
                                   className="metric_value")
     if metric[2] == 'Boolean':
         if value:

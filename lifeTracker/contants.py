@@ -1,0 +1,11 @@
+health = "Health"
+personal_growth="Personal Growth"
+family_matters="Family Matters"
+professional_growth="Professional Growth"
+sex="Sex/Life"
+wealth="Wealth Management"
+
+hr="Hour"
+bool="Boolean"
+num="Number"
+enum="Categorical"

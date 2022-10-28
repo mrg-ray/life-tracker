@@ -57,11 +57,12 @@ def genEnumMetricsGraph():
     Output("time-pie", "figure"),
     Input("period-slider", "value")
 )
-def basePie(value):
+def baseData(value):
     user = current_user.name
     tracker = ds.loadTrackerData(user)
     metrics = ds.getAllMetrics(user)
     joined_data = pd.merge(tracker, metrics, left_on=['metric', 'user'], right_on=['metric', 'user'], how='left')
+    joined_data = joined_data.filter('metric_type' == "Hour")
     fig = px.pie(joined_data, values='value', names='metric', hole=.3)
     return fig
 

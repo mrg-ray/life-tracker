@@ -8,7 +8,7 @@ from flask_login import current_user
 
 from lifeTracker.trackerapp import app
 from lifeTracker.data_store import DataStore
-
+import contants as const
 ds=DataStore()
 
 
@@ -24,14 +24,45 @@ metric_layout = html.Div(
         html.Div(
             [
                 html.P(
-                    "Show Disabled:",
+                    "Show Disabled Metrics:",
                     className="input__heading",
                 ),
                 daq.BooleanSwitch(id='show-disabled', on=False),
             ],
             className="input__container",
         ),
-        dcc.RadioItems(id='selected_metric', value='', inline=True),
+        html.Div(
+            [
+                html.P(
+                    "Life Dimension:",
+                    className="input__heading",
+                ),
+                dcc.Dropdown(
+                    id="life-dimension",
+                    options=[
+                        {"label": i, "value": i}
+                        for i in [
+                            const.health,
+                            const.personal_growth,
+                            const.family_matters,
+                            const.professional_growth,
+                            const.sex,
+                            const.wealth
+                        ]
+                    ],
+                    value="",
+                    placeholder="Select Dimension Type",
+                    className="",
+                ),
+            ],
+            className="dropdown__container",
+        ),
+        html.Div(
+            [
+                dcc.RadioItems(id='selected_metric', value='', inline=True),
+            ],
+            className="input__container",
+        ),
         html.Div(
             [
                 html.P(
@@ -46,6 +77,7 @@ metric_layout = html.Div(
             ],
             className="input__container",
         ),
+
         html.Div(
             [
                 html.P(
@@ -57,11 +89,10 @@ metric_layout = html.Div(
                     options=[
                         {"label": i, "value": i}
                         for i in [
-                            "Hour",
-                            "Minute",
-                            "Number",
-                            "Enum",
-                            "Boolean"
+                            const.hr,
+                            const.bool,
+                            const.num,
+                            const.enum
                         ]
                     ],
                     value="Hour",
@@ -80,6 +111,34 @@ metric_layout = html.Div(
                 dcc.Input(
                     id="description",
                     placeholder="Description for Metric",
+                    className="metric__input",
+                ),
+            ],
+            className="input__container",
+        ),
+        html.Div(
+            [
+                html.P(
+                    "Green Level : ",
+                    className="input__heading",
+                ),
+                dcc.Input(
+                    id="green-level",
+                    placeholder="Mean threshold for metric status in green",
+                    className="metric__input",
+                ),
+            ],
+            className="input__container",
+        ),
+        html.Div(
+            [
+                html.P(
+                    "Red Level : ",
+                    className="input__heading",
+                ),
+                dcc.Input(
+                    id="red-level",
+                    placeholder="Mean threshold for metric status in red",
                     className="metric__input",
                 ),
             ],
@@ -131,10 +190,11 @@ metric_layout = html.Div(
 
 @app.callback(
     Output("selected_metric","options"),
-    Input("show-disabled", "on")
+    Input("life-dimension", "value"),
+    State("show-disabled", "on")
 )
-def load_options(on):
-    return format_options(ds.getAllMetricNames(current_user.name, on))
+def load_options(dimension , on):
+    return format_options(ds.getAllMetricNames(current_user.name, dimension, on))
 
 @app.callback(
     Output("metric", "value"),
@@ -142,6 +202,8 @@ def load_options(on):
     Output("description", "value"),
     Output("allowed-values", "value"),
     Output("enabled", "on"),
+    Output("green-level", "value"),
+    Output("red-level", "value"),
     Input("selected_metric", "value"),
     prevent_initial_call=True
 )
@@ -149,9 +211,9 @@ def select_metric_to_update(value):
     user = current_user.name
     metricData = ds.getMetric(value, user)
     if metricData is None:
-        return None, None, None, None, None
+        return None, None, None, None, None, None, None
     print(metricData)
-    return metricData[1], metricData[2], metricData[3], metricData[4], metricData[5]
+    return metricData[1], metricData[2], metricData[3], metricData[4], metricData[5], metricData[7] , metricData[8]
 
 
 @app.callback(
@@ -163,9 +225,12 @@ def select_metric_to_update(value):
     State("description", "value"),
     State("allowed-values", "value"),
     State("enabled", "on"),
+    State("life-dimension" , "value"),
+    State("green-level", "value"),
+    State("red-level", "value"),
     prevent_initial_call=True
 )
-def add_metric_to_db(n_clicks, metric, metric_type, description, allowed_values, enabled):
+def add_metric_to_db(n_clicks, metric, metric_type, description, allowed_values, enabled , dimension, green, red):
     user = current_user.name
     if not n_clicks:
         return '', ''
@@ -210,6 +275,9 @@ def add_metric_to_db(n_clicks, metric, metric_type, description, allowed_values,
         "description": description,
         "allowed_values": allowed_values,
         "enabled": enabled,
+        "dimension" : dimension,
+        "green" : green,
+        "red" : red
     }
     insert_entry = ds.upsertMetric(metric_entry)
     return dbc.Alert(

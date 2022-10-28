@@ -4,7 +4,7 @@ import sqlalchemy as db
 import pandas as pd
 from pandas.core.common import flatten
 from sqlalchemy.exc import IntegrityError
-
+import contants as const
 db_url = "sqlite:///data_entry.db"
 
 
@@ -28,6 +28,9 @@ class DataStore:
         db.Column("description", db.String(254)),
         db.Column("allowed_values", db.String(254)),
         db.Column("enabled", db.Boolean),
+        db.Column("dimension", db.String(254)),
+        db.Column("green", db.DECIMAL),
+        db.Column("red", db.DECIMAL),
     )
 
     TrackerData = db.Table(
@@ -68,11 +71,11 @@ class DataStore:
                                                 self.MetricTable.columns.user == metric_entry['user']).values(
                     metric_entry))
 
-    def getAllMetricNames(self, user, all):
+    def getAllMetricNames(self, user, dimension, all):
         if all:
-            df = pd.read_sql_query("select metric from metrics where user = ?", self.connection, params=[user])
+            df = pd.read_sql_query("select metric from metrics where user = ? and dimension = ?", self.connection, params=[user, dimension])
         else:
-            df = pd.read_sql_query("select metric from metrics where user = ? and enabled = 1", self.connection, params=[user])
+            df = pd.read_sql_query("select metric from metrics where user = ? and dimension = ? and enabled = 1", self.connection, params=[user, dimension])
         list = []
         for value in df.values:
             list.append(value[0])
@@ -126,3 +129,16 @@ class DataStore:
             self.db_engine.execute(
                 self.Users.update().where(self.Users.columns.username == username)
                 .values({'password': password}))
+
+if __name__ == '__main__':
+    ds = DataStore()
+
+    ds.upsertMetric({"metric": "Workout","user": "MrG","metric_type": const.bool,"description": "Workout?","allowed_values": None,"enabled": 1 , "dimension" : const.health , "green" : .5 , "red" : .4})
+    ds.upsertMetric({"metric": "#Drinks","user": "MrG","metric_type": const.num,"description": "# Drinks today","allowed_values": None,"enabled": 1 , "dimension" : const.health , "green" : .3 , "red" : .43})
+    ds.upsertMetric({"metric": "Tech Learning","user": "MrG","metric_type": const.hr,"description": "# Hours on tech learning","allowed_values": None,"enabled": 1 , "dimension" : const.personal_growth , "green" : .5 , "red" : .4})
+    ds.upsertMetric({"metric": "Sex Learning","user": "MrG","metric_type": const.hr,"description": "# Hours on sex learning","allowed_values": None,"enabled": 1 , "dimension" : const.personal_growth , "green" : .5 , "red" : .4})
+
+    ds.upsertMetric({"metric": "TimeWithMax","user": "MrG","metric_type": const.hr,"description": "Time with Max?","allowed_values": None,"enabled": 1 , "dimension" : const.family_matters , "green" : .5 , "red" : .4})
+    ds.upsertMetric({"metric": "Time With Candy","user": "MrG","metric_type": const.hr,"description": "Time with Candy?","allowed_values": None,"enabled": 1 , "dimension" : const.family_matters , "green" : .5 , "red" : .4})
+
+
