@@ -10,7 +10,8 @@ from flask_login import current_user
 
 from lifeTracker.data_store import DataStore
 
-from dash.dependencies import Input, Output, State
+from dash.dependencies import Input, Output, ALL
+from dash import ctx
 
 from lifeTracker.trackerapp import app
 import plotly.express as px
@@ -33,8 +34,8 @@ menuSlider = html.Div([
 )
 
 
-def metric_display(name, data, score, total, duration):
-    weekly_series = data.groupby(pd.Grouper(freq='W', key='date'))['value'].sum()
+def metric_display(name, score, total, duration, expected, tracker_data):
+    weekly_series = tracker_data.groupby(pd.Grouper(freq='W', key='date'))['value'].sum()
     weekly_data = pd.DataFrame()
     weekly_data['date'] = weekly_series.index
     weekly_data['value'] = weekly_series.values
@@ -50,8 +51,8 @@ def metric_display(name, data, score, total, duration):
     info = dbc.Col([
         html.Div([
             dbc.Row(dbc.Col(html.H3(children=name))),
-            dbc.Row(dbc.Col(html.H4(children="Performance:" + perf))),
-            dbc.Row(dbc.Col(html.H4(children="Expected: 100%")))
+            dbc.Row(dbc.Col(html.H4(children="Performance: " + perf))),
+            dbc.Row(dbc.Col(html.H4(children="Expected: " + expected)))
         ],
             className="metric-performance "
         ),
@@ -77,7 +78,7 @@ def tracker_health(start, end):
         score = 1
     else:
         score = 2
-    return metric_display("Tracker Health", data, score, total, duration)
+    return metric_display("Tracker Health", score, total, duration, "100%", data)
 
 
 baseReportLayout = html.Div([
@@ -100,7 +101,7 @@ def time_management(user, start_date, end_date):
     return rows
 
 
-def dimension_report(user, start_date, end_date):
+def dimension_health(user, start_date, end_date):
     rows = []
     data = ds.loadTrackerData(user, start_date, end_date)
     data['date'] = pd.to_datetime(data['date'])
@@ -119,10 +120,26 @@ def dimension_report(user, start_date, end_date):
             value=scaled_dim,
             label=index,
             max=100,
-            min=0,
+            min=0
         )
-        cols.append(dbc.Col(gauge))
+        cols.append(dbc.Col(html.Div(gauge,id={'type': 'dimension-gauge', 'index': index},n_clicks=0)))
         i += 1
+    return rows
+
+
+def dimension_report(user, dimension, start_date, end_date):
+    rows = []
+    data = ds.loadTrackerData(user, start_date, end_date)
+    data = data[data['dimension'] == dimension]
+    data['date'] = pd.to_datetime(data['date'])
+    metric_data = metric_perf(data)
+    #metric_data = metric_data[metric_data['metric'] == dimension]
+    for index, metric in metric_data.iterrows():
+        score = metric['score']
+        total = metric['total']
+        duration = metric['duration']
+        expected = str(metric['green']) + " / " + str(metric['period'])
+        rows.append(metric_display(index , score, total, duration, expected, data))
     return rows
 
 
@@ -130,14 +147,19 @@ def dimension_report(user, start_date, end_date):
     Output("report-content", "children"),
     Input("reports-tab", "value"),
     Input('date-range', 'start_date'),
-    Input('date-range', 'end_date')
+    Input('date-range', 'end_date'),
+    Input({'type': 'dimension-gauge', 'index': ALL}, 'n_clicks')
 )
-def baseData(tab, start_date, end_date):
+def baseData(tab, start_date, end_date, n_clicks):
     user = current_user.name
-    if tab == "time-management":
-        return time_management(user, start_date, end_date)
-    if tab == "dimension-report":
-        return dimension_report(user, start_date, end_date)
+    triggered_id = ctx.triggered_id
+    if triggered_id is None or triggered_id == "date-range" or triggered_id == "reports-tab":
+        if tab == "time-management":
+            return time_management(user, start_date, end_date)
+        else:
+            return dimension_health(user, start_date, end_date)
+    else:
+        return dimension_report(user, triggered_id['index'], start_date, end_date)
 
 
 def score_metric(perf, green, red):
@@ -183,10 +205,5 @@ def dimension_perf(data):
 
 
 if __name__ == '__main__':
-    ds = DataStore()
-    data = ds.loadTrackerData("MrG", '2022-01-01', '2022-10-30')
-    data['date'] = pd.to_datetime(data['date'])
-    metric_agg = metric_perf(data)
-    dim_agg = dimension_perf(metric_agg)
-    print(metric_agg)
-    print(dim_agg)
+    data = dimension_report("MrG", "Health" , '2022-01-01', '2022-10-30')
+    print(data)

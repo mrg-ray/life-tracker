@@ -213,13 +213,23 @@ td.CalendarDay {
     background: mediumturquoise;
     border: 20px mediumturquoise;
     padding: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .status-red{
     background: indianred;
+    border: 20px indianred;
+    padding: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .status-yellow{
     background: burlywood;
+    border: 20px burlywood;
+    padding: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
