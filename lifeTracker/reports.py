@@ -19,44 +19,19 @@ import contants as const
 ds = DataStore()
 
 
-menuSlider = html.Div(
-    [
+menuSlider = html.Div([
         dbc.Row(
-
                 dcc.DatePickerRange(
                     id='date-range',
                     max_date_allowed=date.today(),
                     initial_visible_month=date.today() - timedelta(days=30),
                     end_date=date.today(),
                     start_date=date.today() - timedelta(days=30),
-                ),
-
-
-        ),
-        dbc.Row(
-                html.P(
-                    style={"font-size": "16px", "opacity": "70%"},
-                    children="Select the time range for report",
                 )
-        ),
-    ],
+        )],
     className="date-range",
 )
 
-
-@app.callback(
-    Output("time-burst", "figure"),
-    Output("tracker-health", "children"),
-    Input('date-range', 'start_date'),
-    Input('date-range', 'end_date')
-)
-def baseData(start_date, end_date):
-    user = current_user.name
-    tracker = ds.loadTrackerData(user, start_date, end_date)
-    time_data = tracker[tracker['metric_type'] == const.hr]
-    fig = px.sunburst(time_data, path=['dimension', 'metric'], values='value')
-    fig.layout.height = 600
-    return fig, tracker_health(start_date ,end_date)
 
 def metric_display(name, data, score, total, duration):
     weekly_series = data.groupby(pd.Grouper(freq='W', key='date'))['value'].sum()
@@ -103,22 +78,43 @@ def tracker_health(start, end):
     return metric_display("Tracker Health" ,data, score, total, duration)
 
 
-baseReportLayout = html.Div(
-    [
-        dbc.Row(dbc.Col(html.H3(children="Time Management"))),
-        dbc.Row(
-            [
-                # Pie Chart, % of Completed Games, Shutouts, and Saves of Total Games played
-                dcc.Graph(id="time-burst", config={"displayModeBar": True}),
-                # Line graph of K/BB ratio with ERA bubbles
-            ],
-        ),
-        dbc.Row(
-                id="tracker-health"
-        )
-    ],
-    className="app-page",
+baseReportLayout = html.Div([
+    dcc.Tabs(id = "reports-tab", value = "dimension-report", children=[
+        dcc.Tab(label="Metric Health", value="dimension-report", id="dimension-report"),
+        dcc.Tab(label= "Time Management", value = "time-management")
+    ]),
+    html.Div(id="report-content", className="app-page")
+])
+
+
+def time_management(user , start_date , end_date):
+    rows = []
+    tracker = ds.loadTrackerData(user, start_date, end_date)
+    time_data = tracker[tracker['metric_type'] == const.hr]
+    fig = px.sunburst(time_data, path=['dimension', 'metric'], values='value')
+    fig.layout.height = 600
+    rows.append( dbc.Row([dcc.Graph(id="time-burst", config={"displayModeBar": True}, figure=fig)]))
+    rows.append( dbc.Row(id="tracker-health" , children=tracker_health(start_date, end_date)))
+    return rows
+
+
+def dimension_report():
+    pass
+
+
+@app.callback(
+    Output("report-content", "children"),
+    Input("reports-tab", "value"),
+    Input('date-range', 'start_date'),
+    Input('date-range', 'end_date')
 )
+def baseData(tab, start_date, end_date):
+    user = current_user.name
+    if tab == "time-management":
+        return time_management(user , start_date , end_date)
+    if tab == "dimension-report":
+        return dimension_report()
+    
 
 def score_metric(perf, green , red):
     if green > red:
