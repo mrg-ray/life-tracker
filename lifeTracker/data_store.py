@@ -141,4 +141,14 @@ if __name__ == '__main__':
     ds.upsertMetric({"metric": "TimeWithMax","user": "MrG","metric_type": const.hr,"description": "Time with Max?","allowed_values": None,"enabled": 1 , "dimension" : const.family_matters , "green" : .5 , "red" : .4})
     ds.upsertMetric({"metric": "Time With Candy","user": "MrG","metric_type": const.hr,"description": "Time with Candy?","allowed_values": None,"enabled": 1 , "dimension" : const.family_matters , "green" : .5 , "red" : .4})
 
+    ds.upsertMetric({"metric": "Sex", "user": "MrG", "metric_type": const.num, "description": "#Sex",
+                     "allowed_values": None, "enabled": 1, "dimension": const.sex, "green": .5, "red": .4})
+    ds.upsertMetric({"metric": "Date Night", "user": "MrG", "metric_type": const.num, "description": "Is it a Date Night",
+                     "allowed_values": None, "enabled": 1, "dimension": const.sex, "green": .5, "red": .4})
+    ds.upsertMetric({"metric": "Meetings", "user": "MrG", "metric_type": const.hr, "description": "Time spent in Meetings",
+                     "allowed_values": None, "enabled": 1, "dimension": const.professional_growth, "green": .5, "red": .4})
+    ds.upsertMetric(
+        {"metric": "Investment", "user": "MrG", "metric_type": const.hr, "description": "Time spent on managing investments",
+         "allowed_values": None, "enabled": 1, "dimension": const.wealth, "green": .5, "red": .4})
+
 

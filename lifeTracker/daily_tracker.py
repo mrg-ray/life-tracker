@@ -102,12 +102,16 @@ tracker_form = html.Div([
             # display_format='MMMM y, DD',
             date=date.today(),
             className="input__date"
-
         ),
+        className="center"
     ),
     dcc.Tabs(id="daily-data-form", children=[]),
+    html.Div(children=[
     html.Div([html.Button("Submit", id="daily-tracker-submit", n_clicks=0,
-                          className="submit__button")]),
+                          className="submit__button")])
+        ],
+        className="center"
+    ),
     html.Div(id="alert-tracker-update")
 ],
 
