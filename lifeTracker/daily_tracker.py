@@ -62,26 +62,33 @@ def createView(metric, user, selected_date):
 
 
 def genform(user, selected_date):
-    elements = []
+    tabs = []
     metrics = ds.getAllMetrics(user)
-    for metric in metrics.values:
-        elements.append(createView(metric, user, selected_date))
-    return elements
+    dimensions = metrics.dimension.unique()
+    for dim in dimensions:
+        sub_metrics = metrics[metrics.dimension == dim]
+        elements = []
+        for metric in sub_metrics.values:
+            elements.append(createView(metric, user, selected_date))
+        tab = dcc.Tab(label=dim, value=dim, children=elements)
+        tabs.append(tab)
+    return tabs
 
 
 def addTrackerData(user, selected_date, values):
-    for value in values:
-        for entry in value.get("props").get("children"):
-            item = entry.get("props")
-            if item.get("className") == "metric_value":
-                metricName = item.get("id")
-                metric = ds.getMetric(user=user, metric=metricName)
-                if metric[2] == 'Boolean':
-                    metricValue = item.get("on")
-                else:
-                    metricValue = item.get("value")
-                print(metricValue)
-                ds.upsertMetricTracker(selected_date, user, metricName, metricValue)
+    for tab in values:
+        for value in tab.get("props").get("children"):
+            for entry in value.get("props").get("children"):
+                item = entry.get("props")
+                if item.get("className") == "metric_value":
+                    metricName = item.get("id")
+                    metric = ds.getMetric(user=user, metric=metricName)
+                    if metric[2] == 'Boolean':
+                        metricValue = item.get("on")
+                    else:
+                        metricValue = item.get("value")
+                    print(metricValue)
+                    ds.upsertMetricTracker(selected_date, user, metricName, metricValue)
     return
 
 
@@ -98,7 +105,7 @@ tracker_form = html.Div([
 
         ),
     ),
-    html.Div(id="daily-data-form"),
+    dcc.Tabs(id="daily-data-form", children=[]),
     html.Div([html.Button("Submit", id="daily-tracker-submit", n_clicks=0,
                           className="submit__button")]),
     html.Div(id="alert-tracker-update")
