@@ -102,3 +102,59 @@ baseReportLayout = html.Div(
 #         return None, None, None, None, None
 #     print(metricData)
 #     return metricData[1], metricData[2], metricData[3], metricData[4], metricData[5]
+
+
+def score_metric(perf, green , red):
+    if green > red:
+        #positive metric
+        if perf >= green:
+            return 2
+        elif perf <= red:
+            return 0
+        else:
+            return 1
+    else:
+        #negetive metric
+        if perf <= green:
+            return 2
+        elif perf >= red:
+            return 0
+        else:
+            return 1
+
+
+
+
+
+def metric_perf(data):
+    metric_agg =  data.groupby('metric').agg(
+        total=('value', sum),
+        duration=("date", lambda x: (max(x) - min(x)).days),
+        green=('green', max),
+        red=('red', max),
+        period=('tracking_period', max),
+        dimension=('dimension', max)
+    )
+    metric_agg['perf'] = metric_agg['total'] / (metric_agg['duration'] / metric_agg['period'])
+    metric_agg['score'] = metric_agg.apply(lambda x: score_metric(x['perf'] ,x['green'] , x['red']) , axis= 1)
+    return metric_agg
+
+def dimension_perf(data):
+    agg = data.groupby('dimension').agg(
+        value=('score', sum),
+        total=('score' , "count")
+    )
+    agg['total'] = agg['total']*2
+    return agg
+
+
+if __name__ == '__main__':
+    ds = DataStore()
+    data = ds.loadTrackerData("MrG", '2022-01-01' , '2022-10-30')
+    data['date'] = pd.to_datetime(data['date'])
+    metric_agg = metric_perf(data)
+    dim_agg = dimension_perf(metric_agg)
+    print(metric_agg)
+    print(dim_agg)
+
+

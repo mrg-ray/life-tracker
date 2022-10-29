@@ -119,9 +119,9 @@ class DataStore:
                                params=[user, param])
         return df.values[0].split(",")
 
-    def loadTrackerData(self, user):
-        return pd.read_sql_query("select * from tracker_data where user = ?", self.connection,
-                                 params=[user])
+    def loadTrackerData(self, user , start , end):
+        return pd.read_sql_query("select m.* , td.date as date, td.value as value from tracker_data td join metrics m where td.user = ? and td.metric = m.metric and m.user = td.user and date(td.date) between date(?) and date(?)", self.connection,
+                                 params=[user, start, end])
 
     def createUser(self, username, password, email):
         try:
