@@ -131,6 +131,12 @@ class DataStore:
                 self.Users.update().where(self.Users.columns.username == username)
                 .values({'password': password}))
 
+    def loadTrackerDataByName(self, user, metric, start, end):
+        return pd.read_sql_query(
+            "select * from tracker_data td where td.user = ? and td.metric = ? and date(td.date) between date(?) and date(?)",
+            self.connection,
+            params=[user, metric ,start, end])
+
 
 if __name__ == '__main__':
     ds = DataStore

@@ -171,13 +171,6 @@ td.CalendarDay {
   margin-bottom: 10px;
 }
 
-.era-slider {
-  margin-left: auto;
-  margin-right: auto;
-  width: 95%;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
 
 .app-page {
   height: fit-content;
@@ -201,3 +194,31 @@ td.CalendarDay {
   /*margin-right: -20%;*/
   padding-bottom: 50px;
 }
+
+.date-range{
+  margin: auto;
+  width: 30%;
+  /*margin-right: -20%;*/
+  padding-bottom: 50px;
+}
+
+.metric-performance{
+  margin: auto;
+  width: 100%;
+  /*margin-right: -20%;*/
+  padding: 100px;
+}
+
+.status-green{
+    background: mediumturquoise;
+    border: 20px mediumturquoise;
+}
+
+.status-red{
+    background: indianred;
+}
+
+.status-yellow{
+    background: burlywood;
+}
+

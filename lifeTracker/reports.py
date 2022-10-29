@@ -1,3 +1,5 @@
+from datetime import date, timedelta, datetime
+
 import dash_core_components as dcc
 import dash_html_components as html
 
@@ -13,76 +15,107 @@ from dash.dependencies import Input, Output, State
 from lifeTracker.trackerapp import app
 import plotly.express as px
 import pandas as pd
+import contants as const
 ds = DataStore()
 
 
 menuSlider = html.Div(
     [
         dbc.Row(
-            dbc.Col(
-                dcc.Slider(
-                    id="period-slider",
-                    min=1,
-                    max=24,
-                    step=1,
-                    tooltip={"always_visible": False, "placement": "bottom"},
-                )
-            )
+
+                dcc.DatePickerRange(
+                    id='date-range',
+                    max_date_allowed=date.today(),
+                    initial_visible_month=date.today() - timedelta(days=30),
+                    end_date=date.today(),
+                    start_date=date.today() - timedelta(days=30),
+                ),
+
+
         ),
         dbc.Row(
-            dbc.Col(
                 html.P(
                     style={"font-size": "16px", "opacity": "70%"},
-                    children="Select the time range for report (In Weeks)",
+                    children="Select the time range for report",
                 )
-            )
         ),
     ],
-    className="era-slider",
+    className="date-range",
 )
 
 
-# Layout for Team Analysis page
-def genTimeMetricsGraphs():
-    pass
-
-
-def genBooleanMetricGraphs():
-    pass
-
-
-def genEnumMetricsGraph():
-    pass
 @app.callback(
-    Output("time-pie", "figure"),
-    Input("period-slider", "value")
+    Output("time-burst", "figure"),
+    Output("tracker-health", "children"),
+    Input('date-range', 'start_date'),
+    Input('date-range', 'end_date')
 )
-def baseData(value):
+def baseData(start_date, end_date):
     user = current_user.name
-    tracker = ds.loadTrackerData(user)
-    metrics = ds.getAllMetrics(user)
-    joined_data = pd.merge(tracker, metrics, left_on=['metric', 'user'], right_on=['metric', 'user'], how='left')
-    joined_data = joined_data.filter('metric_type' == "Hour")
-    fig = px.pie(joined_data, values='value', names='metric', hole=.3)
-    return fig
+    tracker = ds.loadTrackerData(user, start_date, end_date)
+    time_data = tracker[tracker['metric_type'] == const.hr]
+    fig = px.sunburst(time_data, path=['dimension', 'metric'], values='value')
+    fig.layout.height = 600
+    return fig, tracker_health(start_date ,end_date)
+
+def metric_display(name, data, score, total, duration):
+    weekly_series = data.groupby(pd.Grouper(freq='W', key='date'))['value'].sum()
+    weekly_data = pd.DataFrame()
+    weekly_data['date'] = weekly_series.index
+    weekly_data['value'] = weekly_series.values
+    #weekly_data['date'] = weekly_data.index
+    cols = []
+    perf = str(total) + " / " + str(duration)
+    if score == 2:
+        metric_status = "status-green"
+    elif score == 0:
+        metric_status = "status-red"
+    elif score == 1:
+        metric_status = "status-yellow"
+    info = dbc.Col([
+        html.Div([
+            dbc.Row(dbc.Col(html.H3(children=name))),
+            dbc.Row(dbc.Col(html.H4(children="Performance:"+perf))),
+            dbc.Row(dbc.Col(html.H4(children="Expected: 100%")))
+            ],
+            className="metric-performance "
+        ),
+    ])
+    cols.append(info)
+    fig = px.bar(weekly_data, x='date', y='value')
+    cols.append(dbc.Col(dcc.Graph(config={"displayModeBar": False}, figure=fig)))
+    #return cols
+    return html.Div(dbc.Row(children=cols) , className= metric_status)
+def tracker_health(start, end):
+    data = ds.loadTrackerDataByName(current_user.name, "tracker_tracker" , start , end)
+    data['date'] = pd.to_datetime(data['date'])
+    total = data.shape[0]
+    d1 = datetime.strptime(start, "%Y-%m-%d")
+    d2 = datetime.strptime(end, "%Y-%m-%d")
+    duration = (d2 -d1).days
+    perf = total / duration
+    if perf < .9:
+        score = 0
+    elif perf < 1:
+        score = 1
+    else:
+        score = 2
+    return metric_display("Tracker Health" ,data, score, total, duration)
 
 
 baseReportLayout = html.Div(
     [
         dbc.Row(dbc.Col(html.H3(children="Time Share"))),
-        # Display Championship titles in datatable
-        dbc.Row(dbc.Col(html.H4(children="Pitching Performance"))),
         dbc.Row(
             [
                 # Pie Chart, % of Completed Games, Shutouts, and Saves of Total Games played
-                dbc.Col(dcc.Graph(id="time-pie", config={"displayModeBar": False})),
+                dcc.Graph(id="time-burst", config={"displayModeBar": True}),
                 # Line graph of K/BB ratio with ERA bubbles
-                dbc.Col(dcc.Graph(id="time-bar", config={"displayModeBar": False}))
             ],
         ),
-        html.Div(id="time-graphs", children=genTimeMetricsGraphs()),
-        html.Div(id="bool-graphs", children=genBooleanMetricGraphs()),
-        html.Div(id="enum-graphs", children=genEnumMetricsGraph())
+        dbc.Row(
+                id="tracker-health"
+        )
     ],
     className="app-page",
 )
