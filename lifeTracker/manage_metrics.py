@@ -119,6 +119,25 @@ metric_layout = html.Div(
         html.Div(
             [
                 html.P(
+                    "Metric Tracking Period:",
+                    className="input__heading",
+                ),
+                dcc.Dropdown(
+                    id="metric-period",
+                    options=[
+                        {"label": 'Weekly', "value": 7},
+                        {"label": 'Monthly', "value": 31}
+                    ],
+                    value="7",
+                    placeholder="Metric Tracking Period",
+                    className="",
+                ),
+            ],
+            className="dropdown__container",
+        ),
+        html.Div(
+            [
+                html.P(
                     "Green Level : ",
                     className="input__heading",
                 ),
@@ -204,6 +223,7 @@ def load_options(dimension , on):
     Output("enabled", "on"),
     Output("green-level", "value"),
     Output("red-level", "value"),
+    Output("metric-period", "value"),
     Input("selected_metric", "value"),
     prevent_initial_call=True
 )
@@ -211,9 +231,9 @@ def select_metric_to_update(value):
     user = current_user.name
     metricData = ds.getMetric(value, user)
     if metricData is None:
-        return None, None, None, None, None, None, None
+        return None, None, None, None, None, None, None, None
     print(metricData)
-    return metricData[1], metricData[2], metricData[3], metricData[4], metricData[5], metricData[7] , metricData[8]
+    return metricData[1], metricData[2], metricData[3], metricData[4], metricData[5], metricData[7] , metricData[8], metricData[9]
 
 
 @app.callback(
@@ -228,9 +248,10 @@ def select_metric_to_update(value):
     State("life-dimension" , "value"),
     State("green-level", "value"),
     State("red-level", "value"),
+    State("metric-period" , "value"),
     prevent_initial_call=True
 )
-def add_metric_to_db(n_clicks, metric, metric_type, description, allowed_values, enabled , dimension, green, red):
+def add_metric_to_db(n_clicks, metric, metric_type, description, allowed_values, enabled , dimension, green, red , period):
     user = current_user.name
     if not n_clicks:
         return '', ''
@@ -277,7 +298,8 @@ def add_metric_to_db(n_clicks, metric, metric_type, description, allowed_values,
         "enabled": enabled,
         "dimension" : dimension,
         "green" : green,
-        "red" : red
+        "red" : red,
+        "tracking_period" : period
     }
     insert_entry = ds.upsertMetric(metric_entry)
     return dbc.Alert(
