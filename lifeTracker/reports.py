@@ -105,7 +105,7 @@ def tracker_health(start, end):
 
 baseReportLayout = html.Div(
     [
-        dbc.Row(dbc.Col(html.H3(children="Time Share"))),
+        dbc.Row(dbc.Col(html.H3(children="Time Management"))),
         dbc.Row(
             [
                 # Pie Chart, % of Completed Games, Shutouts, and Saves of Total Games played
@@ -119,23 +119,6 @@ baseReportLayout = html.Div(
     ],
     className="app-page",
 )
-
-# @app.callback(
-#     Output("time-graphs", "value"),
-#     #Output("time-bar", "value"),
-#     #Output("description", "value"),
-#     #Output("allowed-values", "value"),
-#     #Output("enabled", "on"),
-#     Input("selected_metric", "value"),
-# )
-# def select_metric_to_update(value):
-#
-#     metricData = ds.getMetric(value, user)
-#     if metricData is None:
-#         return None, None, None, None, None
-#     print(metricData)
-#     return metricData[1], metricData[2], metricData[3], metricData[4], metricData[5]
-
 
 def score_metric(perf, green , red):
     if green > red:
