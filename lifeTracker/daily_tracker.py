@@ -89,6 +89,7 @@ def addTrackerData(user, selected_date, values):
                         metricValue = item.get("value")
                     print(metricValue)
                     ds.upsertMetricTracker(selected_date, user, metricName, metricValue)
+    ds.upsertMetricTracker(selected_date, user, "tracker_tracker", 1)
     return
 
 
