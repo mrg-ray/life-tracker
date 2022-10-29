@@ -212,6 +212,7 @@ td.CalendarDay {
 .status-green{
     background: mediumturquoise;
     border: 20px mediumturquoise;
+    padding: 10px;
 }
 
 .status-red{
