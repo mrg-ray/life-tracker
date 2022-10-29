@@ -12,3 +12,4 @@ flask-login
 werkzeug
 configparser
 python-dateutil==2.8.2
+psycopg2
