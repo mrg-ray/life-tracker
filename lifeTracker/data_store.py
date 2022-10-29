@@ -29,8 +29,9 @@ class DataStore:
         db.Column("allowed_values", db.String(254)),
         db.Column("enabled", db.Boolean),
         db.Column("dimension", db.String(254)),
-        db.Column("green", db.DECIMAL),
-        db.Column("red", db.DECIMAL),
+        db.Column("green", db.Integer),
+        db.Column("red", db.Integer),
+        db.Column("tracking_period", db.Integer)
     )
 
     TrackerData = db.Table(
@@ -108,7 +109,7 @@ class DataStore:
 
     def getTrackerForGivenDate(self, user, selected_date, metric_name):
         params = tuple(flatten((user, selected_date, metric_name)))
-        df = pd.read_sql_query("select value from tracker_data where user = ? and date = ? and  metric = ?",
+        df = pd.read_sql_query("select value from tracker_data where user = ? and DATE(date) = DATE(?) and  metric = ?",
                                self.connection,
                                params=params)
         return df.values
@@ -130,25 +131,8 @@ class DataStore:
                 self.Users.update().where(self.Users.columns.username == username)
                 .values({'password': password}))
 
+
 if __name__ == '__main__':
-    ds = DataStore()
-
-    ds.upsertMetric({"metric": "Workout","user": "MrG","metric_type": const.bool,"description": "Workout?","allowed_values": None,"enabled": 1 , "dimension" : const.health , "green" : .5 , "red" : .4})
-    ds.upsertMetric({"metric": "#Drinks","user": "MrG","metric_type": const.num,"description": "# Drinks today","allowed_values": None,"enabled": 1 , "dimension" : const.health , "green" : .3 , "red" : .43})
-    ds.upsertMetric({"metric": "Tech Learning","user": "MrG","metric_type": const.hr,"description": "# Hours on tech learning","allowed_values": None,"enabled": 1 , "dimension" : const.personal_growth , "green" : .5 , "red" : .4})
-    ds.upsertMetric({"metric": "Sex Learning","user": "MrG","metric_type": const.hr,"description": "# Hours on sex learning","allowed_values": None,"enabled": 1 , "dimension" : const.personal_growth , "green" : .5 , "red" : .4})
-
-    ds.upsertMetric({"metric": "TimeWithMax","user": "MrG","metric_type": const.hr,"description": "Time with Max?","allowed_values": None,"enabled": 1 , "dimension" : const.family_matters , "green" : .5 , "red" : .4})
-    ds.upsertMetric({"metric": "Time With Candy","user": "MrG","metric_type": const.hr,"description": "Time with Candy?","allowed_values": None,"enabled": 1 , "dimension" : const.family_matters , "green" : .5 , "red" : .4})
-
-    ds.upsertMetric({"metric": "Sex", "user": "MrG", "metric_type": const.num, "description": "#Sex",
-                     "allowed_values": None, "enabled": 1, "dimension": const.sex, "green": .5, "red": .4})
-    ds.upsertMetric({"metric": "Date Night", "user": "MrG", "metric_type": const.num, "description": "Is it a Date Night",
-                     "allowed_values": None, "enabled": 1, "dimension": const.sex, "green": .5, "red": .4})
-    ds.upsertMetric({"metric": "Meetings", "user": "MrG", "metric_type": const.hr, "description": "Time spent in Meetings",
-                     "allowed_values": None, "enabled": 1, "dimension": const.professional_growth, "green": .5, "red": .4})
-    ds.upsertMetric(
-        {"metric": "Investment", "user": "MrG", "metric_type": const.hr, "description": "Time spent on managing investments",
-         "allowed_values": None, "enabled": 1, "dimension": const.wealth, "green": .5, "red": .4})
-
+    ds = DataStore
+    print(ds.getTrackerForGivenDate(ds, "MrG" , "2022-10-09" , "Meetings"))
 

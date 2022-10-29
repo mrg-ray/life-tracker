@@ -9,7 +9,6 @@ from dash import Output, Input, State, html, dcc
 from flask_login import LoginManager, login_user, UserMixin
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Table
-from werkzeug.security import check_password_hash, generate_password_hash
 
 from lifeTracker.data_store import DataStore
 from lifeTracker.navbar import login
@@ -72,9 +71,8 @@ def load_user(user_id):
 def insert_users(n_clicks, un, pw, em):
     if n_clicks == 0:
         return
-    hashed_password = generate_password_hash(pw, method='sha256')
     if un is not None and pw is not None and em is not None:
-        ins = ds.createUser(username=un, password=hashed_password, email=em, )
+        ins = ds.createUser(username=un, password=pw, email=em, )
         return [login]
     else:
         return [html.Div([html.H2('Already have a user account?'), dcc.Link('Click here to Log In', href='/login')])]
@@ -89,7 +87,7 @@ def successful(n_clicks, input1, input2):
         pass
     user = ds.getUserByName(input1)
     if len(user) > 0:
-        if check_password_hash(user[0][3], input2):
+        if user[0][3] == input2:
             userObj = Users()
             userObj.id = user[0][0]
             login_user(userObj)
@@ -108,7 +106,7 @@ def update_output(n_clicks, input1, input2):
     if n_clicks > 0:
         user = ds.getUserByName(input1)
         if len(user) > 0:
-            if check_password_hash(user[0][3], input2):
+            if user[0][3] == input2:
                 return ''
             else:
                 return 'Incorrect username or password'
