@@ -8,7 +8,7 @@ from flask_login import current_user
 
 from lifeTracker.trackerapp import app
 from lifeTracker.data_store import DataStore
-import contants as const
+import lifeTracker.contants as const
 ds=DataStore()
 
 

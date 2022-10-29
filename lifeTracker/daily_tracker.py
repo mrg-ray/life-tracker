@@ -11,7 +11,7 @@ from lifeTracker.data_store import DataStore
 
 from lifeTracker.trackerapp import app
 from dash.dependencies import Input, Output, State
-import contants as const
+import lifeTracker.contants as const
 ds = DataStore()
 
 

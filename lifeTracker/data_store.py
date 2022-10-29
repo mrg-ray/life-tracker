@@ -4,7 +4,7 @@ import sqlalchemy as db
 import pandas as pd
 from pandas.core.common import flatten
 from sqlalchemy.exc import IntegrityError
-import contants as const
+
 db_url = "sqlite:///data_entry.db"
 
 

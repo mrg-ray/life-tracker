@@ -16,7 +16,7 @@ from dash import ctx
 from lifeTracker.trackerapp import app
 import plotly.express as px
 import pandas as pd
-import contants as const
+import lifeTracker.contants as const
 
 ds = DataStore()
 
