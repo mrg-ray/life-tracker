@@ -112,7 +112,11 @@ class DataStore:
         df = pd.read_sql_query("select value from tracker_data where user = ? and DATE(date) = DATE(?) and  metric = ?",
                                self.connection,
                                params=params)
-        return df.values
+        if df.shape[0] > 0:
+            return df['value'][0]
+        else:
+            return None
+
 
     def getAllValuesForEnum(self, user, param):
         df = pd.read_sql_query("select allowed_values from metrics where user = ? and metric = ?", self.connection,

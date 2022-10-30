@@ -32,8 +32,8 @@ def createView(metric, user, selected_date):
     value = ds.getTrackerForGivenDate(user, selected_date, metric[1])
     metric_input = None
     if metric[2] == const.hr or metric[2] == const.num:
-        if len(value) > 0:
-            value = int(value[0])
+        if value:
+            value = int(value)
         else:
             value = 0
         if metric[4]:
@@ -48,7 +48,7 @@ def createView(metric, user, selected_date):
                                      className="metric_value")
     if metric[2] == 'Boolean':
         if value:
-            value = bool(value[0])
+            value = bool(int(value))
         else:
             value = False
         metric_input = daq.BooleanSwitch(id=metric[1], on=value, className="metric_value")
