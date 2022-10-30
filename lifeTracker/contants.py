@@ -3,7 +3,7 @@ personal_growth="Personal Growth"
 family_matters="Family Matters"
 professional_growth="Professional Growth"
 sex="Sex/Life"
-wealth="Wealth Management"
+expenses= "Expenses"
 
 hr="Hour"
 bool="Boolean"

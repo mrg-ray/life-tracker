@@ -12,6 +12,7 @@ from lifeTracker.data_store import DataStore
 from lifeTracker.trackerapp import app
 from dash.dependencies import Input, Output, State
 import lifeTracker.contants as const
+
 ds = DataStore()
 
 
@@ -39,8 +40,12 @@ def createView(metric, user, selected_date):
             max = int(metric[4])
         else:
             max = 10
-        metric_input = dcc.Slider(id=metric[1], min=0, max=max, step=1, value=value,
-                                  className="metric_value")
+        if max <= 10:
+            metric_input = dcc.Slider(id=metric[1], min=0, max=max, step=1, value=value,
+                                      className="metric_value")
+        else:
+            metric_input = dcc.Input(id=metric[1], type="number", placeholder="Number", value=value, min=0, max=max,
+                                     className="metric_value")
     if metric[2] == 'Boolean':
         if value:
             value = bool(value[0])
@@ -76,6 +81,7 @@ def genform(user, selected_date):
 
 
 def addTrackerData(user, selected_date, values):
+    data = {}
     for tab in values:
         for value in tab.get("props").get("children"):
             for entry in value.get("props").get("children"):
@@ -88,7 +94,11 @@ def addTrackerData(user, selected_date, values):
                     else:
                         metricValue = item.get("value")
                     print(metricValue)
-                    ds.upsertMetricTracker(selected_date, user, metricName, metricValue)
+                    if metricValue is None:
+                        raise Exception("Value for Metric " + metricName + " is Null.")
+                    data[metricName] = metricValue
+    for key in data.keys():
+        ds.upsertMetricTracker(selected_date, user, key, data.get(key))
     ds.upsertMetricTracker(selected_date, user, "tracker_tracker", 1)
     return
 
@@ -108,9 +118,9 @@ tracker_form = html.Div([
     ),
     dcc.Tabs(id="daily-data-form", children=[]),
     html.Div(children=[
-    html.Div([html.Button("Submit", id="daily-tracker-submit", n_clicks=0,
-                          className="submit__button")])
-        ],
+        html.Div([html.Button("Submit", id="daily-tracker-submit", n_clicks=0,
+                              className="submit__button")])
+    ],
         className="center"
     ),
     html.Div(id="alert-tracker-update")

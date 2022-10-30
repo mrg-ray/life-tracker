@@ -6,6 +6,7 @@ import numpy as np
 if __name__ == '__main__':
     ds = DataStore()
 
+    #MrG
     #health Metrics
     ds.upsertMetric({"metric": "Workout", "description": "Worked Out Today?", "metric_type": const.bool, "green": 4, "red": 2, "dimension": const.health, "tracking_period": 7, "user": "MrG", "enabled": 1})
     ds.upsertMetric({"metric": "Intermittent Fasting", "description": "Were you able to follow intermittent fasting schedule?", "metric_type": const.bool, "green": 6, "red": 4, "dimension": const.health, "tracking_period": 7, "user": "MrG", "enabled": 1})
@@ -37,21 +38,122 @@ if __name__ == '__main__':
 
     #Sex-life
     ds.upsertMetric({"metric": "#Sex", "description": "How many times you made love today?", "metric_type": const.num, "green": 30, "red": 20, "dimension": const.sex, "tracking_period": 31, "user": "MrG", "enabled": 1})
-    ds.upsertMetric({"metric": "Shower With bubbles", "description": "Did you take shower with bubbles today?", "metric_type": const.num, "green": 4, "red": 2, "dimension": const.sex, "tracking_period": 31, "user": "MrG", "enabled": 1})
-    ds.upsertMetric({"metric": "Date Night", "description": "Was it a date night(movies, formal dinner, late night drive)?", "metric_type": const.num, "green": 3, "red": 1, "dimension": const.sex, "tracking_period": 31, "user": "MrG", "enabled": 1})
-    ds.upsertMetric({"metric": "Scene", "description": "Did you plan and carried out any sex session scene today", "metric_type": const.num, "green": 2, "red": 0, "dimension": const.sex, "tracking_period": 31, "user": "MrG", "enabled": 1})
+    ds.upsertMetric({"metric": "Shower With bubbles", "description": "Did you take shower with bubbles today?", "metric_type": const.bool, "green": 4, "red": 2, "dimension": const.sex, "tracking_period": 31, "user": "MrG", "enabled": 1})
+    ds.upsertMetric({"metric": "Date Night", "description": "Was it a date night(movies, formal dinner, late night drive)?", "metric_type": const.bool, "green": 3, "red": 1, "dimension": const.sex, "tracking_period": 31, "user": "MrG", "enabled": 1})
+    ds.upsertMetric({"metric": "Scene", "description": "Did you plan and carried out any sex session scene today", "metric_type": const.bool, "green": 2, "red": 0, "dimension": const.sex, "tracking_period": 31, "user": "MrG", "enabled": 1})
     ds.upsertMetric({"metric": "#Sex Message", "description": "How many naughty messages you sent to bubbles today", "metric_type": const.num, "green": 15, "red": 10, "dimension": const.sex, "tracking_period": 7, "user": "MrG", "enabled": 1})
     ds.upsertMetric({"metric": "#Cum On", "description": "How many time did you make bubbles cum today?", "metric_type": const.num, "green": 30, "red": 20, "dimension": const.sex, "tracking_period": 7, "user": "MrG", "enabled": 1})
 
     #professional
-    ds.upsertMetric({"metric": "Meetings", "description": "How much time spent on Office Meetings today?", "metric_type": const.hr, "green": 10, "red": 15, "dimension": const.personal_growth, "tracking_period": 7, "user": "MrG", "enabled": 1})
-    ds.upsertMetric({"metric": "Team Management", "description": "How much time spent on people management today?", "metric_type": const.hr, "green": 7, "red": 10, "dimension": const.personal_growth, "tracking_period": 7, "user": "MrG", "enabled": 1})
-    ds.upsertMetric({"metric": "Deep Work", "description": "How much time spent on real office work?", "metric_type": const.hr, "green": 14, "red": 7, "dimension": const.personal_growth, "tracking_period": 7, "user": "MrG", "enabled": 1})
+    ds.upsertMetric({"metric": "Meetings", "description": "How much time spent on Office Meetings today?", "metric_type": const.hr, "green": 10, "red": 15, "dimension": const.professional_growth, "tracking_period": 7, "user": "MrG", "enabled": 1})
+    ds.upsertMetric({"metric": "Team Management", "description": "How much time spent on people management today?", "metric_type": const.hr, "green": 7, "red": 10, "dimension": const.professional_growth, "tracking_period": 7, "user": "MrG", "enabled": 1})
+    ds.upsertMetric({"metric": "Deep Work", "description": "How much time spent on real office work?", "metric_type": const.hr, "green": 14, "red": 7, "dimension": const.professional_growth, "tracking_period": 7, "user": "MrG", "enabled": 1})
 
     #Wealth
-    ds.upsertMetric({"metric": "Food Expenses", "description": "How much money did you spend on food today?", "metric_type": const.num, "green": 10000, "red": 20000, "dimension": const.wealth, "tracking_period": 31, "user": "MrG", "enabled": 1})
-    ds.upsertMetric({"metric": "Drinks Expenses", "description": "How much money did you spend on drinks today?", "metric_type": const.num, "green": 5000, "red": 10000, "dimension": const.wealth, "tracking_period": 31, "user": "MrG", "enabled": 1})
-    ds.upsertMetric({"metric": "Personal Expenses", "description": "How much money did you spend on personal expenses?", "metric_type": const.num, "green": 10000, "red": 20000, "dimension": const.wealth, "tracking_period": 31, "user": "MrG", "enabled": 1})
+    ds.upsertMetric({"metric": "Food Expenses", "description": "How much money did you spend on food today?", "metric_type": const.num, "green": 10000, "red": 20000, "dimension": const.expenses, "tracking_period": 31, "user": "MrG", "enabled": 1, "allowed_values": 5000})
+    ds.upsertMetric({"metric": "Drinks Expenses", "description": "How much money did you spend on drinks today?", "metric_type": const.num, "green": 5000, "red": 10000, "dimension": const.expenses, "tracking_period": 31, "user": "MrG", "enabled": 1, "allowed_values": 5000})
+    ds.upsertMetric({"metric": "Personal Expenses", "description": "How much money did you spend on personal expenses?", "metric_type": const.num, "green": 10000, "red": 20000, "dimension": const.expenses, "tracking_period": 31, "user": "MrG", "enabled": 1, "allowed_values": 5000})
+
+    #bubbles
+    #health Metrics
+    ds.upsertMetric(
+        {"metric": "Workout", "description": "Worked Out Today?", "metric_type": const.bool, "green": 4, "red": 2,
+         "dimension": const.health, "tracking_period": 7, "user": "bubbles", "enabled": 1})
+    ds.upsertMetric(
+        {"metric": "Intermittent Fasting", "description": "Were you able to follow intermittent fasting schedule?",
+         "metric_type": const.bool, "green": 6, "red": 4, "dimension": const.health, "tracking_period": 7,
+         "user": "bubbles", "enabled": 1})
+    ds.upsertMetric(
+        {"metric": "Skincare Routine", "description": "Did you follow skincare routine?",
+         "metric_type": const.bool, "green": 6, "red": 4, "dimension": const.health, "tracking_period": 7,
+         "user": "bubbles", "enabled": 1})
+    ds.upsertMetric(
+        {"metric": "Bath Routine", "description": "Did you follow bath routine?",
+         "metric_type": const.bool, "green": 5, "red": 3, "dimension": const.health, "tracking_period": 7,
+         "user": "bubbles", "enabled": 1})
+    ds.upsertMetric({"metric": "Sugar Consumption", "description": "Did you consume sugary treats today?",
+                     "metric_type": const.bool, "green": 1, "red": 3, "dimension": const.health, "tracking_period": 7,
+                     "user": "bubbles", "enabled": 1})
+    ds.upsertMetric(
+        {"metric": "Junk Food", "description": "Did you eat unhealthy Junk Food Today?", "metric_type": const.bool,
+         "green": 1, "red": 3, "dimension": const.health, "tracking_period": 7, "user": "bubbles", "enabled": 1})
+    ds.upsertMetric({"metric": "Morning Supplements", "description": "Have you taken morning supplements?",
+                     "metric_type": const.bool, "green": 7, "red": 5, "dimension": const.health, "tracking_period": 7,
+                     "user": "bubbles", "enabled": 1})
+    ds.upsertMetric(
+        {"metric": "Night Supplements", "description": "Have you taken night supplements?", "metric_type": const.bool,
+         "green": 7, "red": 5, "dimension": const.health, "tracking_period": 7, "user": "bubbles", "enabled": 1})
+    ds.upsertMetric(
+        {"metric": "Sleep", "description": "How many hours of sleep did you get yesterday?", "metric_type": const.hr,
+         "green": 49, "red": 40, "dimension": const.health, "tracking_period": 7, "user": "bubbles", "enabled": 1})
+
+
+
+
+
+    # personal growth
+    ds.upsertMetric(
+        {"metric": "House Chores", "description": "Any time spent on household chores today?", "metric_type": const.hr,
+         "green": 14, "red": 20, "dimension": const.personal_growth, "tracking_period": 7, "user": "bubbles",
+         "enabled": 1})
+    ds.upsertMetric({"metric": "Tech Learning", "description": "How many hours you spent on new tech learning today?",
+                     "metric_type": const.hr, "green": 21, "red": 14, "dimension": const.personal_growth,
+                     "tracking_period": 7, "user": "bubbles", "enabled": 1})
+    ds.upsertMetric({"metric": "MrG Learning Tasks", "description": "Did you spend any time on learning task given by MrG?",
+                     "metric_type": const.hr, "green": 4, "red": 2, "dimension": const.personal_growth,
+                     "tracking_period": 7, "user": "bubbles", "enabled": 1})
+
+    ds.upsertMetric(
+        {"metric": "Time Wastage", "description": "Did you waste any time today?", "metric_type": const.hr, "green": 4,
+         "red": 7, "dimension": const.personal_growth, "tracking_period": 7, "user": "bubbles", "enabled": 1})
+    ds.upsertMetric(
+        {"metric": "Reflection", "description": "Daily Reflection?", "metric_type": const.bool, "green": 7,
+         "red": 5, "dimension": const.personal_growth, "tracking_period": 7, "user": "bubbles", "enabled": 1})
+    ds.upsertMetric(
+        {"metric": "Planning", "description": "Did you plan for the day today?", "metric_type": const.bool, "green": 7,
+         "red": 5, "dimension": const.personal_growth, "tracking_period": 7, "user": "bubbles", "enabled": 1})
+    ds.upsertMetric(
+        {"metric": "Mindfulness", "description": "Did you practise mindfulness today?", "metric_type": const.bool,
+         "green": 5, "red": 2, "dimension": const.personal_growth, "tracking_period": 7, "user": "bubbles",
+         "enabled": 1})
+
+    # professional
+    ds.upsertMetric(
+        {"metric": "Meetings", "description": "How much time spent on Office Meetings today?", "metric_type": const.hr,
+         "green": 10, "red": 15, "dimension": const.professional_growth, "tracking_period": 7, "user": "bubbles",
+         "enabled": 1})
+    ds.upsertMetric(
+        {"metric": "Office Work", "description": "How much time spent on real office work?", "metric_type": const.hr,
+         "green": 14, "red": 7, "dimension": const.professional_growth, "tracking_period": 7, "user": "bubbles",
+         "enabled": 1})
+
+    # Expenses
+
+
+    ds.upsertMetric({"metric": "Personal Expenses", "description": "How much money did you spend on personal expenses?",
+                     "metric_type": const.num, "green": 2000, "red": 5000, "dimension": const.expenses,
+                     "tracking_period": 31, "user": "bubbles", "enabled": 1, "allowed_values": 5000})
+    ds.upsertMetric({"metric": "Skincare Product Expenses", "description": "How much money did you spend on skincare products?",
+                     "metric_type": const.num, "green": 2000, "red": 5000, "dimension": const.expenses,
+                     "tracking_period": 31, "user": "bubbles", "enabled": 1, "allowed_values": 5000})
+    ds.upsertMetric({"metric": "Cosmetic Expenses", "description": "How much money did you spend on cosmetics?",
+                     "metric_type": const.num, "green": 2000, "red": 5000, "dimension": const.expenses,
+                     "tracking_period": 31, "user": "bubbles", "enabled": 1, "allowed_values": 5000})
+    ds.upsertMetric({"metric": "Clothes Purchase", "description": "How much money did you spend on buying clothes?",
+                     "metric_type": const.num, "green": 2000, "red": 5000, "dimension": const.expenses,
+                     "tracking_period": 31, "user": "bubbles", "enabled": 1, "allowed_values": 5000})
+    ds.upsertMetric({"metric": "Kids Expenses", "description": "How much money did you spend on kids?",
+                     "metric_type": const.num, "green": 2000, "red": 5000, "dimension": const.expenses,
+                     "tracking_period": 31, "user": "bubbles", "enabled": 1, "allowed_values": 5000})
+    ds.upsertMetric({"metric": "Flowers", "description": "How much money did you spend on flowers?",
+                     "metric_type": const.num, "green": 2000, "red": 5000, "dimension": const.expenses,
+                     "tracking_period": 31, "user": "bubbles", "enabled": 1, "allowed_values": 5000})
+    ds.upsertMetric({"metric": "Personal Grooming Expenses", "description": "How much money did you spend on personal grooming(Salon etc)?",
+                     "metric_type": const.num, "green": 2000, "red": 5000, "dimension": const.expenses,
+                     "tracking_period": 31, "user": "bubbles", "enabled": 1, "allowed_values": 5000})
+    ds.upsertMetric({"metric": "Hair/Skin Treatments", "description": "How much money did you spend on hair & skin treatments?",
+                     "metric_type": const.num, "green": 2000, "red": 5000, "dimension": const.expenses,
+                     "tracking_period": 31, "user": "bubbles", "enabled": 1, "allowed_values": 5000})
 
     # create tracker data
     # end = datetime.today().date()
@@ -65,7 +167,7 @@ if __name__ == '__main__':
     # df['user'] = "MrG"
     # df['metric'] = "Investment Knowledge"
     # df['value'] = np.random.randint(0,3, size=len(df))
-    # df.to_sql('tracker_data', ds.db_engine, if_exists='replace' , index=False)
+    # df.to_sql('tracker_data', ds.db_engine, if_exists='append' , index=False)
     #
     # df = pd.DataFrame()
     # df['date'] = pd.date_range(start, end, freq='d')

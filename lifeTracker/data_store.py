@@ -40,7 +40,7 @@ class DataStore:
         db.Column("user", db.String(20), primary_key=True),
         db.Column("metric", db.String(99), primary_key=True),
         db.Column("date", db.DATE, primary_key=True),
-        db.Column("value", db.String(19)),
+        db.Column("value", db.String(19) , nullable=False),
     )
 
     Users = db.Table(

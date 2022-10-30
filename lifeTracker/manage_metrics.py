@@ -47,7 +47,7 @@ metric_layout = html.Div(
                             const.family_matters,
                             const.professional_growth,
                             const.sex,
-                            const.wealth
+                            const.expenses
                         ]
                     ],
                     value="",
