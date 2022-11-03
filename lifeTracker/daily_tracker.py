@@ -107,8 +107,7 @@ tracker_form = html.Div([
     html.Div(
         dcc.DatePickerSingle(
             id='tracker-date',
-            min_date_allowed=date.today() - timedelta(days=7),
-            max_date_allowed=date.today(),
+            min_date_allowed=date.today() - timedelta(days=30),
             initial_visible_month=date.today(),
             # display_format='MMMM y, DD',
             date=date.today(),
