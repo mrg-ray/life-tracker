@@ -133,7 +133,6 @@ def dimension_report(user, dimension, start_date, end_date):
     data = data[data['dimension'] == dimension]
     data['date'] = pd.to_datetime(data['date'])
     metric_data = metric_perf(data)
-    #metric_data = metric_data[metric_data['metric'] == dimension]
     for index, metric in metric_data.iterrows():
         score = metric['score']
         total = metric['total']
@@ -182,6 +181,7 @@ def score_metric(perf, green, red):
 
 
 def metric_perf(data):
+    data['value'] = data['value'].astype(float)
     metric_agg = data.groupby('metric').agg(
         total=('value', sum),
         duration=("date", lambda x: (max(x) - min(x)).days),
