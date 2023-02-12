@@ -39,7 +39,7 @@ def createView(metric, user, selected_date):
         if metric[4]:
             max = int(metric[4])
         else:
-            max = 10
+            max = 100000
         if max <= 10:
             metric_input = dcc.Slider(id=metric[1], min=0, max=max, step=1, value=value,
                                       className="metric_value")

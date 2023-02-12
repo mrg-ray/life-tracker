@@ -42,9 +42,10 @@ metric_layout = html.Div(
                     options=[
                         {"label": i, "value": i}
                         for i in [
+                            const.tm,
                             const.health,
                             const.personal_growth,
-                            const.family_matters,
+                            const.habits,
                             const.professional_growth,
                             const.sex,
                             const.expenses
