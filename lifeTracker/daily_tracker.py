@@ -33,11 +33,11 @@ def createView(metric, user, selected_date):
     metric_input = None
     if metric[2] == const.hr or metric[2] == const.num:
         if value:
-            value = int(value)
+            value = float(value)
         else:
             value = 0
         if metric[4]:
-            max = int(metric[4])
+            max = float(metric[4])
         else:
             max = 100000
         if max <= 10:
